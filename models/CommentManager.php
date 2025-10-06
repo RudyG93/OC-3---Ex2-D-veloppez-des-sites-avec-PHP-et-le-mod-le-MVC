@@ -67,6 +67,61 @@ class CommentManager extends AbstractEntityManager
     }
 
     /**
+     * Supprime un commentaire par son ID.
+     * @param int $id : l'ID du commentaire à supprimer.
+     * @return bool : true si la suppression a réussi, false sinon.  
+     */
+    public function deleteCommentById(int $id) : bool
+    {
+        $sql = "DELETE FROM comment WHERE id = :id";
+        $result = $this->db->query($sql, ['id' => $id]);
+        return $result->rowCount() > 0;
+    }
+
+    /**
+     * Récupère tous les commentaires avec les titres d'articles, avec pagination.
+     * @param int $limit : nombre de commentaires par page
+     * @param int $offset : décalage pour la pagination
+     * @param string $sortBy : critère de tri ('date_creation', 'pseudo', 'article_title')
+     * @param string $sortOrder : ordre de tri ('asc', 'desc')
+     * @return array : tableau associatif avec commentaires et titres d'articles
+     */
+    public function getAllCommentsWithArticleTitle(int $limit = 20, int $offset = 0, string $sortBy = 'date_creation', string $sortOrder = 'desc') : array
+    {
+        // Sécurisation des paramètres
+        $limit = max(1, min(100, (int)$limit));
+        $offset = max(0, (int)$offset);
+        
+        $allowedSortColumns = ['date_creation', 'pseudo', 'article_title'];
+        $allowedSortOrders = ['asc', 'desc'];
+        
+        if (!in_array($sortBy, $allowedSortColumns)) {
+            $sortBy = 'date_creation';
+        }
+        if (!in_array($sortOrder, $allowedSortOrders)) {
+            $sortOrder = 'desc';
+        }
+
+        $sql = "SELECT c.*, a.title as article_title 
+                FROM comment c 
+                LEFT JOIN article a ON c.id_article = a.id 
+                ORDER BY " . $sortBy . " " . strtoupper($sortOrder) . " 
+                LIMIT " . $limit . " OFFSET " . $offset;
+        
+        $result = $this->db->query($sql);
+        $comments = [];
+
+        while ($row = $result->fetch()) {
+            $comment = new Comment($row);
+            $comments[] = [
+                'comment' => $comment,
+                'article_title' => $row['article_title']
+            ];
+        }
+        return $comments;
+    }
+
+    /**
      * Récupère le nombre total de commentaires.
      * @return int : le nombre total de commentaires.
      */

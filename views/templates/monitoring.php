@@ -5,172 +5,6 @@
      */
 ?>
 
-<style>
-/* Styles spécifiques au monitoring - optimisé pour écrans >= 1366px */
-.monitoring-container {
-    min-width: 1200px;
-    padding: 20px;
-}
-
-.monitoring-header {
-    text-align: center;
-    margin-bottom: 40px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    padding: 30px;
-    border-radius: 10px;
-}
-
-.stats-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 20px;
-    margin-bottom: 40px;
-}
-
-.stat-card {
-    background: white;
-    border: 1px solid #e0e0e0;
-    border-radius: 8px;
-    padding: 25px;
-    text-align: center;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    transition: transform 0.3s ease;
-}
-
-.stat-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
-}
-
-.stat-number {
-    font-size: 2.5em;
-    font-weight: bold;
-    color: #667eea;
-    margin-bottom: 10px;
-}
-
-.stat-label {
-    font-size: 1.1em;
-    color: #666;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-
-.monitoring-section {
-    background: white;
-    border-radius: 8px;
-    padding: 30px;
-    margin-bottom: 30px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-}
-
-.monitoring-section h2 {
-    color: #333;
-    border-bottom: 3px solid #667eea;
-    padding-bottom: 15px;
-    margin-bottom: 25px;
-}
-
-.popular-articles-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-}
-
-.popular-articles-table th,
-.popular-articles-table td {
-    padding: 12px;
-    text-align: left;
-    border-bottom: 1px solid #ddd;
-}
-
-.popular-articles-table th {
-    background-color: #f8f9fa;
-    font-weight: bold;
-    color: #333;
-}
-
-.views-badge {
-    background: #667eea;
-    color: white;
-    padding: 4px 8px;
-    border-radius: 15px;
-    font-size: 0.9em;
-    font-weight: bold;
-}
-
-.recent-comments {
-    max-height: 400px;
-    overflow-y: auto;
-}
-
-.comment-item {
-    border-left: 4px solid #667eea;
-    padding: 15px;
-    margin-bottom: 15px;
-    background: #f8f9fa;
-    border-radius: 5px;
-}
-
-.comment-meta {
-    font-size: 0.9em;
-    color: #666;
-    margin-bottom: 8px;
-}
-
-.comment-content {
-    color: #333;
-    line-height: 1.5;
-}
-
-.stats-charts {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 30px;
-}
-
-.chart-container {
-    background: #f8f9fa;
-    padding: 20px;
-    border-radius: 8px;
-}
-
-.month-stats {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-}
-
-.month-stat {
-    background: white;
-    padding: 10px 15px;
-    border-radius: 5px;
-    border-left: 4px solid #667eea;
-    min-width: 120px;
-}
-
-.admin-nav {
-    text-align: center;
-    margin-bottom: 30px;
-}
-
-.admin-nav a {
-    display: inline-block;
-    padding: 12px 25px;
-    margin: 0 10px;
-    background: #667eea;
-    color: white;
-    text-decoration: none;
-    border-radius: 5px;
-    transition: background 0.3s ease;
-}
-
-.admin-nav a:hover {
-    background: #5a67d8;
-}
-</style>
-
 <div class="monitoring-container">
     <div class="monitoring-header">
         <h1>📊 Tableau de Bord - Monitoring</h1>
@@ -212,21 +46,87 @@
 
     <!-- Articles les plus populaires -->
     <div class="monitoring-section">
-        <h2>🔥 Articles les Plus Populaires</h2>
+        <h2>🔥 Tous les Articles (Triables)</h2>
+        <p style="color: #666; margin-bottom: 15px;">Cliquez sur les en-têtes de colonnes pour trier les résultats</p>
+        
+        <?php
+        // Affichage du tri actuel
+        $sortLabels = [
+            'title' => 'Titre',
+            'date_creation' => 'Date de création', 
+            'views' => 'Nombre de vues',
+            'comment_count' => 'Nombre de commentaires'
+        ];
+        $orderLabels = [
+            'asc' => 'croissant',
+            'desc' => 'décroissant'
+        ];
+        ?>
+        <div style="background: #f0f8ff; padding: 10px; border-radius: 5px; margin-bottom: 20px; border-left: 4px solid #667eea;">
+            <strong>Tri actuel :</strong> 
+            <?php if ($currentSort === null): ?>
+                Aucun tri appliqué (ordre naturel)
+            <?php else: ?>
+                <?= $sortLabels[$currentSort] ?> (ordre <?= $orderLabels[$currentOrder] ?>)
+            <?php endif; ?>
+            - <a href="index.php?action=monitoring" style="color: #667eea;">Réinitialiser le tri</a>
+        </div>
+        
+        <?php
+        // Fonction pour générer les liens de tri
+        function generateSortLink($column, $currentSort, $currentOrder) {
+            $newOrder = ($currentSort === $column && $currentOrder === 'asc') ? 'desc' : 'asc';
+            return "index.php?action=monitoring&sort=" . $column . "&order=" . $newOrder;
+        }
+        
+        // Fonction pour générer l'indicateur de tri
+        function getSortIndicator($column, $currentSort, $currentOrder) {
+            if ($currentSort === $column) {
+                return '<span class="sort-indicator ' . $currentOrder . '"></span>';
+            } else {
+                return '<span class="sort-indicator neutral"></span>';
+            }
+        }
+        ?>
+        
         <table class="popular-articles-table">
             <thead>
                 <tr>
                     <th>Rang</th>
-                    <th>Titre</th>
-                    <th>Date de création</th>
-                    <th>Vues</th>
+                    <th>
+                        <a href="<?= generateSortLink('title', $currentSort, $currentOrder) ?>" class="sortable-header">
+                            Titre
+                            <?= getSortIndicator('title', $currentSort, $currentOrder) ?>
+                        </a>
+                    </th>
+                    <th>
+                        <a href="<?= generateSortLink('date_creation', $currentSort, $currentOrder) ?>" class="sortable-header">
+                            Date de création
+                            <?= getSortIndicator('date_creation', $currentSort, $currentOrder) ?>
+                        </a>
+                    </th>
+                    <th>
+                        <a href="<?= generateSortLink('views', $currentSort, $currentOrder) ?>" class="sortable-header">
+                            Vues
+                            <?= getSortIndicator('views', $currentSort, $currentOrder) ?>
+                        </a>
+                    </th>
+                    <th>
+                        <a href="<?= generateSortLink('comment_count', $currentSort, $currentOrder) ?>" class="sortable-header">
+                            Commentaires
+                            <?= getSortIndicator('comment_count', $currentSort, $currentOrder) ?>
+                        </a>
+                    </th>
                     <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
                 <?php 
                 $rank = 1;
-                foreach ($popularArticles as $article): ?>
+                foreach ($popularArticles as $articleData): 
+                    $article = $articleData['article'];
+                    $commentCount = $articleData['comment_count'];
+                ?>
                 <tr>
                     <td><strong>#<?= $rank++ ?></strong></td>
                     <td>
@@ -236,6 +136,7 @@
                     </td>
                     <td><?= Utils::convertDateToFrenchFormat($article->getDateCreation()) ?></td>
                     <td><span class="views-badge"><?= $article->getViews() ?> vues</span></td>
+                    <td><span class="comment-badge"><?= $commentCount ?> commentaire<?= $commentCount > 1 ? 's' : '' ?></span></td>
                     <td>
                         <a href="index.php?action=showUpdateArticleForm&id=<?= $article->getId() ?>">Modifier</a>
                     </td>
@@ -261,6 +162,127 @@
                 </div>
             </div>
             <?php endforeach; ?>
+        </div>
+    </div>
+
+    <!-- Modération des commentaires -->
+    <div class="monitoring-section">
+        <h2>🛡️ Modération des Commentaires</h2>
+        <p style="color: #666; margin-bottom: 15px;">Gérez tous les commentaires du blog - Cliquez sur les en-têtes pour trier</p>
+        
+        <?php if (!empty($successMessage)): ?>
+        <div class="success-message">
+            ✅ <?= $successMessage ?>
+        </div>
+        <?php endif; ?>
+
+        <?php
+        // Fonctions pour les liens de tri des commentaires
+        function generateCommentSortLink($column, $currentSort, $currentOrder) {
+            $newOrder = ($currentSort === $column && $currentOrder === 'asc') ? 'desc' : 'asc';
+            return "index.php?action=monitoring&comment_sort=" . $column . "&comment_order=" . $newOrder;
+        }
+        
+        function getCommentSortIndicator($column, $currentSort, $currentOrder) {
+            if ($currentSort === $column) {
+                return '<span class="sort-indicator ' . $currentOrder . '"></span>';
+            } else {
+                return '<span class="sort-indicator neutral"></span>';
+            }
+        }
+        ?>
+
+        <div style="background: #f0f8ff; padding: 10px; border-radius: 5px; margin-bottom: 20px; border-left: 4px solid #667eea;">
+            <strong>Tri actuel :</strong> 
+            <?php
+            $commentSortLabels = [
+                'date_creation' => 'Date de création',
+                'pseudo' => 'Auteur', 
+                'article_title' => 'Article'
+            ];
+            $orderLabels = ['asc' => 'croissant', 'desc' => 'décroissant'];
+            ?>
+            <?= $commentSortLabels[$commentSort] ?> (ordre <?= $orderLabels[$commentOrder] ?>)
+            - <a href="index.php?action=monitoring" style="color: #667eea;">Réinitialiser</a>
+        </div>
+
+        <table class="comment-moderation-table">
+            <thead>
+                <tr>
+                    <th>
+                        <a href="<?= generateCommentSortLink('date_creation', $commentSort, $commentOrder) ?>" class="sortable-header">
+                            Date
+                            <?= getCommentSortIndicator('date_creation', $commentSort, $commentOrder) ?>
+                        </a>
+                    </th>
+                    <th>
+                        <a href="<?= generateCommentSortLink('pseudo', $commentSort, $commentOrder) ?>" class="sortable-header">
+                            Auteur
+                            <?= getCommentSortIndicator('pseudo', $commentSort, $commentOrder) ?>
+                        </a>
+                    </th>
+                    <th>
+                        <a href="<?= generateCommentSortLink('article_title', $commentSort, $commentOrder) ?>" class="sortable-header">
+                            Article
+                            <?= getCommentSortIndicator('article_title', $commentSort, $commentOrder) ?>
+                        </a>
+                    </th>
+                    <th>Commentaire</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($allComments as $commentData): ?>
+                <tr>
+                    <td>
+                        <?= Utils::convertDateToFrenchFormat($commentData['comment']->getDateCreation()) ?>
+                    </td>
+                    <td>
+                        <strong><?= Utils::format($commentData['comment']->getPseudo()) ?></strong>
+                    </td>
+                    <td>
+                        <a href="index.php?action=showArticle&id=<?= $commentData['comment']->getIdArticle() ?>" target="_blank">
+                            <?= Utils::format($commentData['article_title']) ?>
+                        </a>
+                    </td>
+                    <td class="comment-content-preview">
+                        <?= Utils::format($commentData['comment']->getContent()) ?>
+                    </td>
+                    <td class="comment-actions">
+                        <a href="index.php?action=deleteComment&id=<?= $commentData['comment']->getId() ?>&return=monitoring" 
+                           class="delete-btn"
+                           onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce commentaire ?\nCette action est irréversible.')">
+                            🗑️ Supprimer
+                        </a>
+                    </td>
+                </tr>
+                <?php endforeach; ?>
+                
+                <?php if (empty($allComments)): ?>
+                <tr>
+                    <td colspan="5" style="text-align: center; padding: 20px; color: #666;">
+                        Aucun commentaire trouvé.
+                    </td>
+                </tr>
+                <?php endif; ?>
+            </tbody>
+        </table>
+
+        <!-- Pagination simple -->
+        <div class="pagination">
+            <?php if ($commentPage > 1): ?>
+                <a href="index.php?action=monitoring&comment_page=<?= $commentPage - 1 ?>&comment_sort=<?= $commentSort ?>&comment_order=<?= $commentOrder ?>">
+                    ← Précédent
+                </a>
+            <?php endif; ?>
+            
+            <span class="current">Page <?= $commentPage ?></span>
+            
+            <?php if (count($allComments) === $commentsPerPage): ?>
+                <a href="index.php?action=monitoring&comment_page=<?= $commentPage + 1 ?>&comment_sort=<?= $commentSort ?>&comment_order=<?= $commentOrder ?>">
+                    Suivant →
+                </a>
+            <?php endif; ?>
         </div>
     </div>
 
