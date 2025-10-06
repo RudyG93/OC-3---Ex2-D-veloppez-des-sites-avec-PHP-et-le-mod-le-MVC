@@ -15,6 +15,7 @@
         <?php if ($article->getDateUpdate() != null) { ?>
             <span class="info"> Modifié le <?= Utils::convertDateToFrenchFormat($article->getDateUpdate()) ?></span>
         <?php } ?>
+        <span class="info"> <?= $article->getViews() ?> vue<?= $article->getViews() > 1 ? 's' : '' ?></span>
     </div>
 </article>
 
