@@ -103,4 +103,70 @@ class ArticleManager extends AbstractEntityManager
         $sql = "UPDATE article SET views = views + 1 WHERE id = :id";
         $this->db->query($sql, ['id' => $id]);
     }
+
+    /**
+     * Récupère le nombre total d'articles.
+     * @return int : le nombre total d'articles.
+     */
+    public function getTotalArticlesCount() : int
+    {
+        $sql = "SELECT COUNT(*) as total FROM article";
+        $result = $this->db->query($sql);
+        $data = $result->fetch();
+        return (int) $data['total'];
+    }
+
+    /**
+     * Récupère le nombre total de vues de tous les articles.
+     * @return int : le nombre total de vues.
+     */
+    public function getTotalViewsCount() : int
+    {
+        $sql = "SELECT SUM(views) as total FROM article";
+        $result = $this->db->query($sql);
+        $data = $result->fetch();
+        return (int) ($data['total'] ?? 0);
+    }
+
+    /**
+     * Récupère les articles les plus populaires (par nombre de vues).
+     * @param int $limit : le nombre d'articles à récupérer.
+     * @return array : un tableau d'objets Article.
+     */
+    public function getMostPopularArticles(int $limit = 5) : array
+    {
+        // On sécurise la valeur limit (doit être un entier positif)
+        $limit = max(1, (int)$limit);
+        $sql = "SELECT * FROM article ORDER BY views DESC LIMIT " . $limit;
+        $result = $this->db->query($sql);
+        $articles = [];
+
+        while ($article = $result->fetch()) {
+            $articles[] = new Article($article);
+        }
+        return $articles;
+    }
+
+    /**
+     * Récupère les statistiques par mois (nombre d'articles créés).
+     * @return array : un tableau associatif avec les statistiques par mois.
+     */
+    public function getArticleStatsByMonth() : array
+    {
+        $sql = "SELECT 
+                    YEAR(date_creation) as year, 
+                    MONTH(date_creation) as month, 
+                    COUNT(*) as count 
+                FROM article 
+                GROUP BY YEAR(date_creation), MONTH(date_creation) 
+                ORDER BY YEAR(date_creation) DESC, MONTH(date_creation) DESC 
+                LIMIT 12";
+        $result = $this->db->query($sql);
+        $stats = [];
+
+        while ($row = $result->fetch()) {
+            $stats[] = $row;
+        }
+        return $stats;
+    }
 }

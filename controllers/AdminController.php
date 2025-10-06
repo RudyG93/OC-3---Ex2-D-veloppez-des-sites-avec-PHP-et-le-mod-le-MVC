@@ -176,4 +176,49 @@ class AdminController {
         // On redirige vers la page d'administration.
         Utils::redirect("admin");
     }
+
+    /**
+     * Affiche la page de monitoring/statistiques.
+     * @return void
+     */
+    public function showMonitoring() : void
+    {
+        $this->checkIfUserIsConnected();
+
+        // Récupération des statistiques
+        $articleManager = new ArticleManager();
+        $commentManager = new CommentManager();
+
+        // Statistiques générales
+        $totalArticles = $articleManager->getTotalArticlesCount();
+        $totalComments = $commentManager->getTotalCommentsCount();
+        $totalViews = $articleManager->getTotalViewsCount();
+
+        // Articles les plus populaires
+        $popularArticles = $articleManager->getMostPopularArticles(10);
+
+        // Commentaires récents
+        $recentComments = $commentManager->getRecentCommentsWithArticleTitle(10);
+
+        // Statistiques par mois
+        $articleStatsByMonth = $articleManager->getArticleStatsByMonth();
+        $commentStatsByMonth = $commentManager->getCommentStatsByMonth();
+
+        // Calcul des moyennes
+        $averageViewsPerArticle = $totalArticles > 0 ? round($totalViews / $totalArticles, 2) : 0;
+        $averageCommentsPerArticle = $totalArticles > 0 ? round($totalComments / $totalArticles, 2) : 0;
+
+        $view = new View("Monitoring - Statistiques");
+        $view->render("monitoring", [
+            'totalArticles' => $totalArticles,
+            'totalComments' => $totalComments,
+            'totalViews' => $totalViews,
+            'averageViewsPerArticle' => $averageViewsPerArticle,
+            'averageCommentsPerArticle' => $averageCommentsPerArticle,
+            'popularArticles' => $popularArticles,
+            'recentComments' => $recentComments,
+            'articleStatsByMonth' => $articleStatsByMonth,
+            'commentStatsByMonth' => $commentStatsByMonth
+        ]);
+    }
 }

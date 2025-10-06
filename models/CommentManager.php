@@ -66,4 +66,66 @@ class CommentManager extends AbstractEntityManager
         return $result->rowCount() > 0;
     }
 
+    /**
+     * Récupère le nombre total de commentaires.
+     * @return int : le nombre total de commentaires.
+     */
+    public function getTotalCommentsCount() : int
+    {
+        $sql = "SELECT COUNT(*) as total FROM comment";
+        $result = $this->db->query($sql);
+        $data = $result->fetch();
+        return (int) $data['total'];
+    }
+
+    /**
+     * Récupère les commentaires récents avec le titre de l'article.
+     * @param int $limit : le nombre de commentaires à récupérer.
+     * @return array : un tableau associatif avec les données des commentaires et titres d'articles.
+     */
+    public function getRecentCommentsWithArticleTitle(int $limit = 10) : array
+    {
+        // On sécurise la valeur limit (doit être un entier positif)
+        $limit = max(1, (int)$limit);
+        $sql = "SELECT c.*, a.title as article_title 
+                FROM comment c 
+                LEFT JOIN article a ON c.id_article = a.id 
+                ORDER BY c.date_creation DESC 
+                LIMIT " . $limit;
+        $result = $this->db->query($sql);
+        $comments = [];
+
+        while ($row = $result->fetch()) {
+            $comment = new Comment($row);
+            $comments[] = [
+                'comment' => $comment,
+                'article_title' => $row['article_title']
+            ];
+        }
+        return $comments;
+    }
+
+    /**
+     * Récupère les statistiques par mois (nombre de commentaires créés).
+     * @return array : un tableau associatif avec les statistiques par mois.
+     */
+    public function getCommentStatsByMonth() : array
+    {
+        $sql = "SELECT 
+                    YEAR(date_creation) as year, 
+                    MONTH(date_creation) as month, 
+                    COUNT(*) as count 
+                FROM comment 
+                GROUP BY YEAR(date_creation), MONTH(date_creation) 
+                ORDER BY YEAR(date_creation) DESC, MONTH(date_creation) DESC 
+                LIMIT 12";
+        $result = $this->db->query($sql);
+        $stats = [];
+
+        while ($row = $result->fetch()) {
+            $stats[] = $row;
+        }
+        return $stats;
+    }
+
 }

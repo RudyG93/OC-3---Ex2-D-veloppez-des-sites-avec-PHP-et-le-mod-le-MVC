@@ -7,6 +7,10 @@
 
 <h2>Edition des articles</h2>
 
+<div style="text-align: center; margin-bottom: 30px;">
+    <a class="submit" href="index.php?action=monitoring">📊 Voir les Statistiques</a>
+</div>
+
 <div class="adminArticle">
     <?php foreach ($articles as $article) { ?>
         <div class="articleLine">
