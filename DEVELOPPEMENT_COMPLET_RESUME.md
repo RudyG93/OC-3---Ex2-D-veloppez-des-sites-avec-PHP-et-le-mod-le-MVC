@@ -158,7 +158,7 @@ TABLE user {
 ### Sécurité Implémentée
 - **Authentification** : Vérification session sur toutes les actions admin
 - **Validation** : Paramètres GET/POST contrôlés et validés
-- **Échappement** : `Utils::format()` sur tous les affichages
+- **Échappement** : `FormatHelper::format()` sur tous les affichages
 - **SQL** : Requêtes préparées dans tous les managers
 
 ### Performance et UX

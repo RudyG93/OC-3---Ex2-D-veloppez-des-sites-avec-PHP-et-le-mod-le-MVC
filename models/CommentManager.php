@@ -55,18 +55,6 @@ class CommentManager extends AbstractEntityManager
     }
 
     /**
-     * Supprime un commentaire.
-     * @param Comment $comment : l'objet Comment à supprimer.
-     * @return bool : true si la suppression a réussi, false sinon.
-     */
-    public function deleteComment(Comment $comment) : bool
-    {
-        $sql = "DELETE FROM comment WHERE id = :id";
-        $result = $this->db->query($sql, ['id' => $comment->getId()]);
-        return $result->rowCount() > 0;
-    }
-
-    /**
      * Supprime un commentaire par son ID.
      * @param int $id : l'ID du commentaire à supprimer.
      * @return bool : true si la suppression a réussi, false sinon.  
@@ -76,6 +64,26 @@ class CommentManager extends AbstractEntityManager
         $sql = "DELETE FROM comment WHERE id = :id";
         $result = $this->db->query($sql, ['id' => $id]);
         return $result->rowCount() > 0;
+    }
+
+    /**
+     * Méthode privée pour récupérer les commentaires avec les titres d'articles.
+     * @param string $sql : la requête SQL à exécuter.
+     * @return array : tableau associatif avec commentaires et titres d'articles.
+     */
+    private function fetchCommentsWithArticleTitle(string $sql) : array
+    {
+        $result = $this->db->query($sql);
+        $comments = [];
+
+        while ($row = $result->fetch()) {
+            $comment = new Comment($row);
+            $comments[] = [
+                'comment' => $comment,
+                'article_title' => $row['article_title']
+            ];
+        }
+        return $comments;
     }
 
     /**
@@ -92,33 +100,23 @@ class CommentManager extends AbstractEntityManager
         $limit = max(1, min(100, (int)$limit));
         $offset = max(0, (int)$offset);
         
-        $allowedSortColumns = ['date_creation', 'pseudo', 'article_title'];
-        $allowedSortOrders = ['asc', 'desc'];
+        // Validation et mapping des colonnes de tri
+        $sortColumns = [
+            'date_creation' => 'c.date_creation',
+            'pseudo' => 'c.pseudo',
+            'article_title' => 'a.title'
+        ];
         
-        if (!in_array($sortBy, $allowedSortColumns)) {
-            $sortBy = 'date_creation';
-        }
-        if (!in_array($sortOrder, $allowedSortOrders)) {
-            $sortOrder = 'desc';
-        }
+        $sortColumn = $sortColumns[$sortBy] ?? 'c.date_creation';
+        $sortOrder = strtoupper($sortOrder) === 'ASC' ? 'ASC' : 'DESC';
 
         $sql = "SELECT c.*, a.title as article_title 
                 FROM comment c 
                 LEFT JOIN article a ON c.id_article = a.id 
-                ORDER BY " . $sortBy . " " . strtoupper($sortOrder) . " 
-                LIMIT " . $limit . " OFFSET " . $offset;
+                ORDER BY {$sortColumn} {$sortOrder} 
+                LIMIT {$limit} OFFSET {$offset}";
         
-        $result = $this->db->query($sql);
-        $comments = [];
-
-        while ($row = $result->fetch()) {
-            $comment = new Comment($row);
-            $comments[] = [
-                'comment' => $comment,
-                'article_title' => $row['article_title']
-            ];
-        }
-        return $comments;
+        return $this->fetchCommentsWithArticleTitle($sql);
     }
 
     /**
@@ -142,22 +140,14 @@ class CommentManager extends AbstractEntityManager
     {
         // On sécurise la valeur limit (doit être un entier positif)
         $limit = max(1, (int)$limit);
+        
         $sql = "SELECT c.*, a.title as article_title 
                 FROM comment c 
                 LEFT JOIN article a ON c.id_article = a.id 
                 ORDER BY c.date_creation DESC 
-                LIMIT " . $limit;
-        $result = $this->db->query($sql);
-        $comments = [];
-
-        while ($row = $result->fetch()) {
-            $comment = new Comment($row);
-            $comments[] = [
-                'comment' => $comment,
-                'article_title' => $row['article_title']
-            ];
-        }
-        return $comments;
+                LIMIT {$limit}";
+        
+        return $this->fetchCommentsWithArticleTitle($sql);
     }
 
     /**

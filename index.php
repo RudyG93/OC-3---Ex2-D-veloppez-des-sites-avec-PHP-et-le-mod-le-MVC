@@ -5,7 +5,7 @@ require_once 'config/autoload.php';
 
 // On récupère l'action demandée par l'utilisateur.
 // Si aucune action n'est demandée, on affiche la page d'accueil.
-$action = Utils::request('action', 'home');
+$action = HttpHelper::get('action', 'home');
 
 // Try catch global pour gérer les erreurs
 try {
@@ -27,61 +27,65 @@ try {
             $articleController->showArticle();
             break;
 
-        case 'addArticle':
-            $articleController = new ArticleController();
-            $articleController->addArticle();
-            break;
-
         case 'addComment':
             $commentController = new CommentController();
             $commentController->addComment();
             break;
 
-
         // Section admin & connexion. 
         case 'admin': 
-            $adminController = new AdminController();
-            $adminController->showAdmin();
+            $articleAdminController = new ArticleAdminController();
+            $articleAdminController->showAdmin();
             break;
 
         case 'connectionForm':
-            $adminController = new AdminController();
-            $adminController->displayConnectionForm();
+            $authController = new AuthController();
+            $authController->displayConnectionForm();
             break;
 
         case 'connectUser': 
-            $adminController = new AdminController();
-            $adminController->connectUser();
+            $authController = new AuthController();
+            $authController->connectUser();
             break;
 
         case 'disconnectUser':
-            $adminController = new AdminController();
-            $adminController->disconnectUser();
+            $authController = new AuthController();
+            $authController->disconnectUser();
+            break;
+
+        case 'showAddArticleForm':
+            $articleAdminController = new ArticleAdminController();
+            $articleAdminController->showAddArticleForm();
+            break;
+
+        case 'addArticle':
+            $articleAdminController = new ArticleAdminController();
+            $articleAdminController->addArticle();
             break;
 
         case 'showUpdateArticleForm':
-            $adminController = new AdminController();
-            $adminController->showUpdateArticleForm();
+            $articleAdminController = new ArticleAdminController();
+            $articleAdminController->showUpdateArticleForm();
             break;
 
         case 'updateArticle': 
-            $adminController = new AdminController();
-            $adminController->updateArticle();
+            $articleAdminController = new ArticleAdminController();
+            $articleAdminController->updateArticle();
             break;
 
         case 'deleteArticle':
-            $adminController = new AdminController();
-            $adminController->deleteArticle();
+            $articleAdminController = new ArticleAdminController();
+            $articleAdminController->deleteArticle();
             break;
 
         case 'monitoring':
-            $adminController = new AdminController();
-            $adminController->showMonitoring();
+            $monitoringController = new MonitoringController();
+            $monitoringController->showMonitoring();
             break;
 
         case 'deleteComment':
-            $adminController = new AdminController();
-            $adminController->deleteComment();
+            $commentController = new CommentController();
+            $commentController->deleteComment();
             break;
 
         default:

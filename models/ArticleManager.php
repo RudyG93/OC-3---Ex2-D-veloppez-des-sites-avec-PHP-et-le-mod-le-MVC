@@ -6,12 +6,12 @@
 class ArticleManager extends AbstractEntityManager 
 {
     /**
-     * Récupère tous les articles.
-     * @return array : un tableau d'objets Article.
+     * Méthode privée pour récupérer des articles depuis une requête SQL.
+     * @param string $sql : la requête SQL à exécuter.
+     * @return array : tableau d'objets Article.
      */
-    public function getAllArticles() : array
+    private function fetchArticles(string $sql) : array
     {
-        $sql = "SELECT * FROM article";
         $result = $this->db->query($sql);
         $articles = [];
 
@@ -19,6 +19,36 @@ class ArticleManager extends AbstractEntityManager
             $articles[] = new Article($article);
         }
         return $articles;
+    }
+
+    /**
+     * Méthode privée pour récupérer des articles avec le nombre de commentaires.
+     * @param string $sql : la requête SQL à exécuter.
+     * @return array : tableau associatif avec 'article' et 'comment_count'.
+     */
+    private function fetchArticlesWithCommentCount(string $sql) : array
+    {
+        $result = $this->db->query($sql);
+        $articles = [];
+
+        while ($row = $result->fetch()) {
+            $article = new Article($row);
+            $articles[] = [
+                'article' => $article,
+                'comment_count' => (int)$row['comment_count']
+            ];
+        }
+        return $articles;
+    }
+
+    /**
+     * Récupère tous les articles.
+     * @return array : un tableau d'objets Article.
+     */
+    public function getAllArticles() : array
+    {
+        $sql = "SELECT * FROM article";
+        return $this->fetchArticles($sql);
     }
     
     /**
@@ -137,14 +167,8 @@ class ArticleManager extends AbstractEntityManager
     {
         // On sécurise la valeur limit (doit être un entier positif)
         $limit = max(1, (int)$limit);
-        $sql = "SELECT * FROM article ORDER BY views DESC LIMIT " . $limit;
-        $result = $this->db->query($sql);
-        $articles = [];
-
-        while ($article = $result->fetch()) {
-            $articles[] = new Article($article);
-        }
-        return $articles;
+        $sql = "SELECT * FROM article ORDER BY views DESC LIMIT {$limit}";
+        return $this->fetchArticles($sql);
     }
 
     /**
@@ -182,16 +206,6 @@ class ArticleManager extends AbstractEntityManager
                 GROUP BY a.id, a.id_user, a.title, a.content, a.date_creation, a.date_update, a.views
                 ORDER BY a.date_creation DESC";
         
-        $result = $this->db->query($sql);
-        $articles = [];
-
-        while ($row = $result->fetch()) {
-            $article = new Article($row);
-            $articles[] = [
-                'article' => $article,
-                'comment_count' => (int)$row['comment_count']
-            ];
-        }
-        return $articles;
+        return $this->fetchArticlesWithCommentCount($sql);
     }
 }

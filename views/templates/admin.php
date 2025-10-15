@@ -17,9 +17,9 @@
             <div class="title"><?= $article->getTitle() ?></div>
             <div class="content"><?= $article->getContent(200) ?></div>
             <div><a class="submit" href="index.php?action=showUpdateArticleForm&id=<?= $article->getId() ?>">Modifier</a></div>
-            <div><a class="submit" href="index.php?action=deleteArticle&id=<?= $article->getId() ?>" <?= Utils::askConfirmation("Êtes-vous sûr de vouloir supprimer cet article ?") ?> >Supprimer</a></div>
+            <div><a class="submit" href="index.php?action=deleteArticle&id=<?= $article->getId() ?>" <?= HttpHelper::askConfirmation("Êtes-vous sûr de vouloir supprimer cet article ?") ?> >Supprimer</a></div>
         </div>
     <?php } ?>
 </div>
 
-<a class="submit" href="index.php?action=showUpdateArticleForm">Ajouter un article</a>
+<a class="submit" href="index.php?action=showAddArticleForm">Ajouter un article</a>

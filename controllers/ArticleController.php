@@ -22,7 +22,7 @@ class ArticleController
     public function showArticle() : void
     {
         // Récupération de l'id de l'article demandé.
-        $id = Utils::request("id", -1);
+        $id = HttpHelper::get("id", -1);
 
         $articleManager = new ArticleManager();
         $article = $articleManager->getArticleById($id);
@@ -39,16 +39,6 @@ class ArticleController
 
         $view = new View($article->getTitle());
         $view->render("detailArticle", ['article' => $article, 'comments' => $comments]);
-    }
-
-    /**
-     * Affiche le formulaire d'ajout d'un article.
-     * @return void
-     */
-    public function addArticle() : void
-    {
-        $view = new View("Ajouter un article");
-        $view->render("addArticle");
     }
 
     /**

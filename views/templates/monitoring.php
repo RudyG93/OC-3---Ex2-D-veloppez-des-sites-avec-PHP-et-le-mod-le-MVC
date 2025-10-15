@@ -69,52 +69,35 @@
             <?php else: ?>
                 <?= $sortLabels[$currentSort] ?> (ordre <?= $orderLabels[$currentOrder] ?>)
             <?php endif; ?>
-            - <a href="index.php?action=monitoring" style="color: #667eea;">Réinitialiser le tri</a>
+            - <a href="index.php?action=monitoring" style="color: #667eea;">Réinitialiser</a>
         </div>
-        
-        <?php
-        // Fonction pour générer les liens de tri
-        function generateSortLink($column, $currentSort, $currentOrder) {
-            $newOrder = ($currentSort === $column && $currentOrder === 'asc') ? 'desc' : 'asc';
-            return "index.php?action=monitoring&sort=" . $column . "&order=" . $newOrder;
-        }
-        
-        // Fonction pour générer l'indicateur de tri
-        function getSortIndicator($column, $currentSort, $currentOrder) {
-            if ($currentSort === $column) {
-                return '<span class="sort-indicator ' . $currentOrder . '"></span>';
-            } else {
-                return '<span class="sort-indicator neutral"></span>';
-            }
-        }
-        ?>
         
         <table class="popular-articles-table">
             <thead>
                 <tr>
                     <th>Rang</th>
                     <th>
-                        <a href="<?= generateSortLink('title', $currentSort, $currentOrder) ?>" class="sortable-header">
+                        <a href="<?= SortHelper::generateSortLink('title', $currentSort, $currentOrder) ?>" class="sortable-header">
                             Titre
-                            <?= getSortIndicator('title', $currentSort, $currentOrder) ?>
+                            <?= SortHelper::getSortIndicator('title', $currentSort, $currentOrder) ?>
                         </a>
                     </th>
                     <th>
-                        <a href="<?= generateSortLink('date_creation', $currentSort, $currentOrder) ?>" class="sortable-header">
+                        <a href="<?= SortHelper::generateSortLink('date_creation', $currentSort, $currentOrder) ?>" class="sortable-header">
                             Date de création
-                            <?= getSortIndicator('date_creation', $currentSort, $currentOrder) ?>
+                            <?= SortHelper::getSortIndicator('date_creation', $currentSort, $currentOrder) ?>
                         </a>
                     </th>
                     <th>
-                        <a href="<?= generateSortLink('views', $currentSort, $currentOrder) ?>" class="sortable-header">
+                        <a href="<?= SortHelper::generateSortLink('views', $currentSort, $currentOrder) ?>" class="sortable-header">
                             Vues
-                            <?= getSortIndicator('views', $currentSort, $currentOrder) ?>
+                            <?= SortHelper::getSortIndicator('views', $currentSort, $currentOrder) ?>
                         </a>
                     </th>
                     <th>
-                        <a href="<?= generateSortLink('comment_count', $currentSort, $currentOrder) ?>" class="sortable-header">
+                        <a href="<?= SortHelper::generateSortLink('comment_count', $currentSort, $currentOrder) ?>" class="sortable-header">
                             Commentaires
-                            <?= getSortIndicator('comment_count', $currentSort, $currentOrder) ?>
+                            <?= SortHelper::getSortIndicator('comment_count', $currentSort, $currentOrder) ?>
                         </a>
                     </th>
                     <th>Actions</th>
@@ -131,10 +114,10 @@
                     <td><strong>#<?= $rank++ ?></strong></td>
                     <td>
                         <a href="index.php?action=showArticle&id=<?= $article->getId() ?>" target="_blank">
-                            <?= Utils::format($article->getTitle()) ?>
+                            <?= FormatHelper::format($article->getTitle()) ?>
                         </a>
                     </td>
-                    <td><?= Utils::convertDateToFrenchFormat($article->getDateCreation()) ?></td>
+                    <td><?= FormatHelper::convertDateToFrenchFormat($article->getDateCreation()) ?></td>
                     <td><span class="views-badge"><?= $article->getViews() ?> vues</span></td>
                     <td><span class="comment-badge"><?= $commentCount ?> commentaire<?= $commentCount > 1 ? 's' : '' ?></span></td>
                     <td>
@@ -153,12 +136,12 @@
             <?php foreach ($recentComments as $commentData): ?>
             <div class="comment-item">
                 <div class="comment-meta">
-                    <strong><?= Utils::format($commentData['comment']->getPseudo()) ?></strong> 
-                    - <?= Utils::convertDateToFrenchFormat($commentData['comment']->getDateCreation()) ?>
-                    - Article: <em><?= Utils::format($commentData['article_title']) ?></em>
+                    <strong><?= FormatHelper::format($commentData['comment']->getPseudo()) ?></strong> 
+                    - <?= FormatHelper::convertDateToFrenchFormat($commentData['comment']->getDateCreation()) ?>
+                    - Article: <em><?= FormatHelper::format($commentData['article_title']) ?></em>
                 </div>
                 <div class="comment-content">
-                    <?= Utils::format($commentData['comment']->getContent(200)) ?>
+                    <?= FormatHelper::format($commentData['comment']->getContent(200)) ?>
                 </div>
             </div>
             <?php endforeach; ?>
@@ -176,22 +159,6 @@
         </div>
         <?php endif; ?>
 
-        <?php
-        // Fonctions pour les liens de tri des commentaires
-        function generateCommentSortLink($column, $currentSort, $currentOrder) {
-            $newOrder = ($currentSort === $column && $currentOrder === 'asc') ? 'desc' : 'asc';
-            return "index.php?action=monitoring&comment_sort=" . $column . "&comment_order=" . $newOrder;
-        }
-        
-        function getCommentSortIndicator($column, $currentSort, $currentOrder) {
-            if ($currentSort === $column) {
-                return '<span class="sort-indicator ' . $currentOrder . '"></span>';
-            } else {
-                return '<span class="sort-indicator neutral"></span>';
-            }
-        }
-        ?>
-
         <div style="background: #f0f8ff; padding: 10px; border-radius: 5px; margin-bottom: 20px; border-left: 4px solid #667eea;">
             <strong>Tri actuel :</strong> 
             <?php
@@ -202,7 +169,11 @@
             ];
             $orderLabels = ['asc' => 'croissant', 'desc' => 'décroissant'];
             ?>
-            <?= $commentSortLabels[$commentSort] ?> (ordre <?= $orderLabels[$commentOrder] ?>)
+            <?php if ($commentSort === null): ?>
+                Aucun tri appliqué (ordre naturel)
+            <?php else: ?>
+                <?= $commentSortLabels[$commentSort] ?> (ordre <?= $orderLabels[$commentOrder] ?>)
+            <?php endif; ?>
             - <a href="index.php?action=monitoring" style="color: #667eea;">Réinitialiser</a>
         </div>
 
@@ -210,21 +181,21 @@
             <thead>
                 <tr>
                     <th>
-                        <a href="<?= generateCommentSortLink('date_creation', $commentSort, $commentOrder) ?>" class="sortable-header">
+                        <a href="<?= SortHelper::generateSortLink('date_creation', $commentSort, $commentOrder, 'comment_sort') ?>" class="sortable-header">
                             Date
-                            <?= getCommentSortIndicator('date_creation', $commentSort, $commentOrder) ?>
+                            <?= SortHelper::getSortIndicator('date_creation', $commentSort, $commentOrder) ?>
                         </a>
                     </th>
                     <th>
-                        <a href="<?= generateCommentSortLink('pseudo', $commentSort, $commentOrder) ?>" class="sortable-header">
+                        <a href="<?= SortHelper::generateSortLink('pseudo', $commentSort, $commentOrder, 'comment_sort') ?>" class="sortable-header">
                             Auteur
-                            <?= getCommentSortIndicator('pseudo', $commentSort, $commentOrder) ?>
+                            <?= SortHelper::getSortIndicator('pseudo', $commentSort, $commentOrder) ?>
                         </a>
                     </th>
                     <th>
-                        <a href="<?= generateCommentSortLink('article_title', $commentSort, $commentOrder) ?>" class="sortable-header">
+                        <a href="<?= SortHelper::generateSortLink('article_title', $commentSort, $commentOrder, 'comment_sort') ?>" class="sortable-header">
                             Article
-                            <?= getCommentSortIndicator('article_title', $commentSort, $commentOrder) ?>
+                            <?= SortHelper::getSortIndicator('article_title', $commentSort, $commentOrder) ?>
                         </a>
                     </th>
                     <th>Commentaire</th>
@@ -235,18 +206,18 @@
                 <?php foreach ($allComments as $commentData): ?>
                 <tr>
                     <td>
-                        <?= Utils::convertDateToFrenchFormat($commentData['comment']->getDateCreation()) ?>
+                        <?= FormatHelper::convertDateToFrenchFormat($commentData['comment']->getDateCreation()) ?>
                     </td>
                     <td>
-                        <strong><?= Utils::format($commentData['comment']->getPseudo()) ?></strong>
+                        <strong><?= FormatHelper::format($commentData['comment']->getPseudo()) ?></strong>
                     </td>
                     <td>
                         <a href="index.php?action=showArticle&id=<?= $commentData['comment']->getIdArticle() ?>" target="_blank">
-                            <?= Utils::format($commentData['article_title']) ?>
+                            <?= FormatHelper::format($commentData['article_title']) ?>
                         </a>
                     </td>
                     <td class="comment-content-preview">
-                        <?= Utils::format($commentData['comment']->getContent()) ?>
+                        <?= FormatHelper::format($commentData['comment']->getContent()) ?>
                     </td>
                     <td class="comment-actions">
                         <a href="index.php?action=deleteComment&id=<?= $commentData['comment']->getId() ?>&return=monitoring" 
