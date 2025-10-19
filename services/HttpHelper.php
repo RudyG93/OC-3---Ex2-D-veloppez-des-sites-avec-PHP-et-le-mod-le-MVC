@@ -5,8 +5,8 @@
  * Cette classe regroupe les méthodes statiques pour gérer les paramètres de requête,
  * les redirections et les interactions utilisateur.
  */
-class HttpHelper {
-    
+class HttpHelper
+{
     /**
      * Récupère une variable de la superglobale $_REQUEST.
      * Si cette variable n'est pas définie, on retourne la valeur null (par défaut)

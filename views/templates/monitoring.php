@@ -114,10 +114,10 @@
                     <td><strong>#<?= $rank++ ?></strong></td>
                     <td>
                         <a href="index.php?action=showArticle&id=<?= $article->getId() ?>" target="_blank">
-                            <?= FormatHelper::format($article->getTitle()) ?>
+                            <?= DateFormatter::format($article->getTitle()) ?>
                         </a>
                     </td>
-                    <td><?= FormatHelper::convertDateToFrenchFormat($article->getDateCreation()) ?></td>
+                    <td><?= DateFormatter::convertDateToFrenchFormat($article->getDateCreation()) ?></td>
                     <td><span class="views-badge"><?= $article->getViews() ?> vues</span></td>
                     <td><span class="comment-badge"><?= $commentCount ?> commentaire<?= $commentCount > 1 ? 's' : '' ?></span></td>
                     <td>
@@ -136,12 +136,12 @@
             <?php foreach ($recentComments as $commentData): ?>
             <div class="comment-item">
                 <div class="comment-meta">
-                    <strong><?= FormatHelper::format($commentData['comment']->getPseudo()) ?></strong> 
-                    - <?= FormatHelper::convertDateToFrenchFormat($commentData['comment']->getDateCreation()) ?>
-                    - Article: <em><?= FormatHelper::format($commentData['article_title']) ?></em>
+                    <strong><?= DateFormatter::format($commentData['comment']->getPseudo()) ?></strong> 
+                    - <?= DateFormatter::convertDateToFrenchFormat($commentData['comment']->getDateCreation()) ?>
+                    - Article: <em><?= DateFormatter::format($commentData['article_title']) ?></em>
                 </div>
                 <div class="comment-content">
-                    <?= FormatHelper::format($commentData['comment']->getContent(200)) ?>
+                    <?= DateFormatter::format($commentData['comment']->getContent(200)) ?>
                 </div>
             </div>
             <?php endforeach; ?>
@@ -206,18 +206,18 @@
                 <?php foreach ($allComments as $commentData): ?>
                 <tr>
                     <td>
-                        <?= FormatHelper::convertDateToFrenchFormat($commentData['comment']->getDateCreation()) ?>
+                        <?= DateFormatter::convertDateToFrenchFormat($commentData['comment']->getDateCreation()) ?>
                     </td>
                     <td>
-                        <strong><?= FormatHelper::format($commentData['comment']->getPseudo()) ?></strong>
+                        <strong><?= DateFormatter::format($commentData['comment']->getPseudo()) ?></strong>
                     </td>
                     <td>
                         <a href="index.php?action=showArticle&id=<?= $commentData['comment']->getIdArticle() ?>" target="_blank">
-                            <?= FormatHelper::format($commentData['article_title']) ?>
+                            <?= DateFormatter::format($commentData['article_title']) ?>
                         </a>
                     </td>
                     <td class="comment-content-preview">
-                        <?= FormatHelper::format($commentData['comment']->getContent()) ?>
+                        <?= DateFormatter::format($commentData['comment']->getContent()) ?>
                     </td>
                     <td class="comment-actions">
                         <a href="index.php?action=deleteComment&id=<?= $commentData['comment']->getId() ?>&return=monitoring" 

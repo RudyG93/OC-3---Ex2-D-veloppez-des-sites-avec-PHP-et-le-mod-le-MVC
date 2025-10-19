@@ -4,8 +4,8 @@
  * Classe helper pour la gestion des sessions utilisateur.
  * Cette classe contient des méthodes statiques pour vérifier la connexion et déconnecter l'utilisateur.
  */
-class SessionHelper {
-    
+class SessionHelper
+{
     /**
      * Vérifie si l'utilisateur est connecté.
      * Redirige vers le formulaire de connexion si ce n'est pas le cas.

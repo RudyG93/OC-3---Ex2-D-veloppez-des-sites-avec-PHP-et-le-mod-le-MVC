@@ -4,8 +4,8 @@
  * Classe helper pour la gestion du tri des données.
  * Cette classe contient des méthodes statiques pour générer des liens de tri et des indicateurs visuels.
  */
-class SortHelper {
-    
+class SortHelper
+{
     /**
      * Génère un lien pour trier une colonne.
      * @param string $column : La colonne à trier.
@@ -18,6 +18,7 @@ class SortHelper {
     {
         $newOrder = ($currentSort === $column && $currentOrder === 'asc') ? 'desc' : 'asc';
         $orderParam = $paramPrefix === 'sort' ? 'order' : 'comment_order';
+
         return "index.php?action=monitoring&{$paramPrefix}={$column}&{$orderParam}={$newOrder}";
     }
 
@@ -32,9 +33,9 @@ class SortHelper {
     {
         if ($currentSort === $column) {
             return '<span class="sort-indicator ' . $currentOrder . '"></span>';
-        } else {
-            return '<span class="sort-indicator neutral"></span>';
         }
+        
+        return '<span class="sort-indicator neutral"></span>';
     }
 
     /**

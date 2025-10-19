@@ -6,14 +6,14 @@
 ?>
 
 <article class="mainArticle">
-    <h2> <?= FormatHelper::format($article->getTitle()) ?> </h2>
+    <h2> <?= DateFormatter::format($article->getTitle()) ?> </h2>
     <span class="quotation">«</span>
-    <p><?= FormatHelper::format($article->getContent()) ?></p>
+    <p><?= DateFormatter::format($article->getContent()) ?></p>
 
     <div class="footer">
-        <span class="info"> Publié le <?= FormatHelper::convertDateToFrenchFormat($article->getDateCreation()) ?></span>
+        <span class="info"> Publié le <?= DateFormatter::convertDateToFrenchFormat($article->getDateCreation()) ?></span>
         <?php if ($article->getDateUpdate() != null) { ?>
-            <span class="info"> Modifié le <?= FormatHelper::convertDateToFrenchFormat($article->getDateUpdate()) ?></span>
+            <span class="info"> Modifié le <?= DateFormatter::convertDateToFrenchFormat($article->getDateUpdate()) ?></span>
         <?php } ?>
         <span class="info"> <?= $article->getViews() ?> vue<?= $article->getViews() > 1 ? 's' : '' ?></span>
     </div>
@@ -30,8 +30,8 @@
                 echo '<li>';
                 echo '  <div class="smiley">☻</div>';
                 echo '  <div class="detailComment">';
-                echo '      <h3 class="info">Le ' . FormatHelper::convertDateToFrenchFormat($comment->getDateCreation()) . ", " . FormatHelper::format($comment->getPseudo()) . ' a écrit :</h3>';
-                echo '      <p class="content">' . FormatHelper::format($comment->getContent()) . '</p>';
+                echo '      <h3 class="info">Le ' . DateFormatter::convertDateToFrenchFormat($comment->getDateCreation()) . ", " . DateFormatter::format($comment->getPseudo()) . ' a écrit :</h3>';
+                echo '      <p class="content">' . DateFormatter::format($comment->getContent()) . '</p>';
                 echo '  </div>';
                 echo '</li>';
             }               

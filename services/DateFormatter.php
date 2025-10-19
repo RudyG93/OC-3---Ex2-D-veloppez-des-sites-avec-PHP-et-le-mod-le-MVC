@@ -4,7 +4,7 @@
  * Classe helper pour le formatage des données.
  * Cette classe contient des méthodes statiques pour formater les dates, les chaînes de caractères, etc.
  */
-class FormatHelper {
+class DateFormatter {
     
     /**
      * Convertit une date vers le format de type "Samedi 15 juillet 2023" en francais.
@@ -18,6 +18,7 @@ class FormatHelper {
         // Ca peut se faire depuis php.ini ou parfois directement depuis votre utilitaire (wamp/mamp/xamp)
         $dateFormatter = new IntlDateFormatter('fr_FR', IntlDateFormatter::FULL, IntlDateFormatter::FULL);
         $dateFormatter->setPattern('EEEE d MMMM Y');
+
         return $dateFormatter->format($date);
     }
 
